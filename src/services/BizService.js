@@ -1,5 +1,15 @@
 import FetchUtil from '../utils/FetchUtil.vue';
 
+const getBizRoles = function (bizId, token) {
+    var url = "/roles";
+    var params = {"bizId" : bizId};
+    return FetchUtil.handleGet(url, token, params);
+}
+
+const getBizList = function (token) {
+    const url = '/biz/bizList';
+    return FetchUtil.handleGet(url, token);
+}
 
 const getBizIdList = function(selectedRows) {
     var deleteArray = [];
@@ -53,4 +63,4 @@ const deleteBiz = function (userToken, bizList) {
     return response;
 }
 
-export default {createUpdateBiz, deleteBiz}
+export default { getBizRoles, getBizList, createUpdateBiz, deleteBiz }
