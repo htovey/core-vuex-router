@@ -103,25 +103,24 @@ export default {
         if(this.valid) {
           let uname = this.unameRef.valueOf();
           let password = this.pwordRef.valueOf();
-          let response = LoginService.submitLogin(uname, password);
-          response
-              .then(response => {
-                  this.reset();
-                  var userToken = response.headers.get('authorization');
-                  response.json()
-                  .then(json => {
-                  this.handleLoginSuccess(userToken, json);
-                  //this.props.handleLoginSuccess(json, userToken);
-                });
-              })    
-              .catch(() => {
-                  this.handleError('Login failed. Please try again.');
-              });
+          LoginService.submitLogin(uname, password)
+          .then((response) => {
+            //this.reset();
+            var userToken = response.headers.get('authorization');
+            response.json()
+            .then((json) => {
+              this.handleLoginSuccess(userToken, json);
+            //this.props.handleLoginSuccess(json, userToken);
+            });
+          })    
+          .catch(() => {
+              this.handleError('Login failed. Please try again.');
+          });
         }
       },
 
       handleLoginSuccess(token, loginJson) {
-        this.$store.token = token; 
+        this.$store.userToken = token; 
         this.setPersonModel(loginJson.person);
         this.setLoginModel(loginJson.user);
         this.role = loginJson.user.roleType;
@@ -174,7 +173,12 @@ export default {
         roleName: userJson ? userJson.roleName : '',
         roleType: userJson ? userJson.roleType : ''        
       },
-      this.adminId = userJson ? userJson.adminId : ''
+      this.adminId = userJson ? userJson.adminId : '',
+      this.$store.profile = {
+        bizId: userJson.bizId,
+        role: userJson.roleType
+      },
+      this.$store.adminId = userJson.userId
     },
     },
   }

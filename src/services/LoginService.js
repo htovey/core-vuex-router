@@ -1,4 +1,4 @@
-import FetchUtil from './utils/FetchUtil.vue';
+import FetchUtil from '../utils/FetchUtil.vue';
 
 const submitLogin = function (uname, password) {
     const loginToken = "Basic "+window.btoa(uname+":"+password)
@@ -22,7 +22,9 @@ const submitLogin = function (uname, password) {
         .catch(() => {
             this.handleError('Login failed. Please try again.');
         });
-  }
+
+        return res;
+  
 }
 
 export default { submitLogin };

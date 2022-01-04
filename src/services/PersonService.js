@@ -1,11 +1,11 @@
 import FetchUtil from '../utils/FetchUtil.vue';
 
-const getPersonList = (bizId, roleType, userToken) => {
+const getPersonList = (bizId, roleTypes, userToken) => {
     console.log("getPersonList()");
     var url = "/person/persons";
     var params = {
         "bizId" : bizId,
-        "roleType" : roleType
+        "roleTypes" : roleTypes
     };
     return FetchUtil.handleGet(url, userToken, params);
 }
@@ -18,12 +18,13 @@ const getPersonIdList = function(selectedRows) {
     return deleteArray;
 }
 
-const createUpdatePerson = function (token, actionType, name, type, id) {
+const createUpdatePerson = function (token, actionType, person) {
     const url = '/person/'+actionType;
     const payload = {
-        'name' : name,
-        'type' : type,
-        'id' : actionType === 'update' ? id : null
+        "id" : person.id,
+        "fName" : person.fName,
+        "lName" : person.lName,
+        "userName" : person.userName
     }
     var response = FetchUtil.handlePost(url, token, JSON.stringify(payload))
     .then(response => {
