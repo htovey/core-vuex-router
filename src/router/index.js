@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import LoginView from '../views/login/LoginView.vue';
+import Auth from '../views/login/Auth.vue';
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: LoginView
+    name: 'AuthView',
+    component: Auth
   },
   {
     path: '/admin',
