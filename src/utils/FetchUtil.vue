@@ -1,6 +1,21 @@
 <script>
 
-const handleLogin = (methodUrl, userToken, params) => {
+const handleRegistration = (methodUrl, payload) => {
+    var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
+    var url = new URL(host+methodUrl);
+    var result =  fetch( url, {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json",
+            "Accept": "application/json",
+        },
+        body: payload
+    });
+   
+    return result;
+}
+
+const handleBasic = (methodUrl, userToken, params) => {
     var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
     var url = new URL(host+methodUrl);
     if (params) {
@@ -52,5 +67,5 @@ const handlePost = (methodUrl, userToken, payload) => {
     return result;
 }
 
-export default {handleLogin, handleGet, handlePost}
+export default {handleBasic, handleGet, handlePost, handleRegistration}
 </script>
