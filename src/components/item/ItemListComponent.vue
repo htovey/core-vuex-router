@@ -31,8 +31,8 @@ export default {
                     value: 'saveDate'
                 },
                 {
-                    text: 'Type',
-                    value: 'type'
+                    text: 'Category',
+                    value: 'category'
                 }
             ],
             selected: []

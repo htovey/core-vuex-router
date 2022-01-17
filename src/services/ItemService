@@ -13,12 +13,13 @@ const getItemIdList = function(selectedRows) {
     return deleteArray;
 }
 
-const createUpdateItem = function (token, actionType, name, type, id) {
+const createUpdateItem = function (token, actionType, item) {
     const url = '/item/'+actionType;
     const payload = {
-        'name' : name,
-        'type' : type,
-        'id' : actionType === 'update' ? id : null
+        'name' : item.name,
+        'category' : item.category,
+        'description' : item.description,
+        'id' : actionType === 'update' ? item.id : null
     }
     var response = FetchUtil.handlePost(url, token, JSON.stringify(payload))
     .then(response => {

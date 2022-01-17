@@ -57,9 +57,9 @@ export default {
       return {
         valid: true,
         actionType: this.$parent.actionType,
-        itemNameRef: '',
-        itemCategoryRef: '',
-        itemDescRef: '',
+        itemNameRef: this.$attrs.selectedItem.name || '',
+        itemCategoryRef: this.$attrs.selectedItem.category || '',
+        itemDescRef: this.$attrs.selectedItem.description || '',
         nameRules: [
           v => !!v || 'Item Name is required',
         // v => (v && v.length <= 10) || 'Name must be less than 10 characters',

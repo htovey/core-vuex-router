@@ -25,7 +25,7 @@
               >LOGOUT</v-btn>
               <v-btn
                 v-if="this.selectedItemList.length === 1"
-                    @click="this.launchItemPage"
+                    @click="this.openItem"
                 >
                     <v-icon>mdi-launch</v-icon>
                 </v-btn>
@@ -43,7 +43,9 @@
       </v-app-bar>
     </template>   
     <template v-if="this.openItemForm"> 
-      <item-dialog :actionType="this.actionType"></item-dialog>
+      <item-dialog 
+        :actionType="this.actionType"
+        :selectedItem="selectedItemList[0]"></item-dialog>
     </template>
     <template v-else>
       <item-list-component></item-list-component>
@@ -128,15 +130,16 @@ export default {
 
     toggleItem() {
         this.openItemForm = !this.openItemForm;
+        if (!this.openItemForm) {
+          this.selectedItemList = [];
+        }
     },
 
     handleItemSubmit(item) {
         ItemService.createUpdateItem(
           this.$store.userToken,
           this.actionType,
-          item.name,
-          item.category,
-          item.id,
+          item
         ).then(response => {
           if (response.ok) {
             this.handleSuccess(this.actionType, 'item');
@@ -193,10 +196,12 @@ export default {
       this.selectedItemList = selection;   
     },
 
+    updateItem () {},
+
     launchItemPage() {
      // let launchItem = this.itemList[this.props.selectedRows.data[0].index];
       //this.props.loadItemDashboard(launchItem.id);
-      this.$store.profile.itemId = this.selectedItemList[0].id;
+      this.$store.selectedItem = this.selectedItemList[0];
       this.$router.push('/item');
     }
 
