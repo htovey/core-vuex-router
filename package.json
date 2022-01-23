@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "VUE_APP_API_URL=http://192.168.1.101:8080 vue-cli-service serve --port 9999",
+    "serve:remote": "VUE_APP_API_URL=http://35.208.67.156:8080 vue-cli-service serve --port 9999",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",

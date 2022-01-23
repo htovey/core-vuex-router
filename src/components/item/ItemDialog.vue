@@ -56,10 +56,11 @@ export default {
     data() {
       return {
         valid: true,
+        item: this.$attrs.selectedItem,
         actionType: this.$parent.actionType,
-        itemNameRef: this.$attrs.selectedItem.name || '',
-        itemCategoryRef: this.$attrs.selectedItem.category || '',
-        itemDescRef: this.$attrs.selectedItem.description || '',
+        itemNameRef: this.item ? this.item.name : '',
+        itemCategoryRef: this.item ? this.item.category : '',
+        itemDescRef: this.item ? this.item.description : '',
         nameRules: [
           v => !!v || 'Item Name is required',
         // v => (v && v.length <= 10) || 'Name must be less than 10 characters',

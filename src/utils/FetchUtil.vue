@@ -1,7 +1,7 @@
 <script>
 
 const handleRegistration = (methodUrl, payload) => {
-    var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
+    var host = process.env.VUE_APP_API_URL || 'http://35.208.67.156:8080';
     var url = new URL(host+methodUrl);
     var result =  fetch( url, {
         method: "POST",
@@ -16,7 +16,7 @@ const handleRegistration = (methodUrl, payload) => {
 }
 
 const handleBasic = (methodUrl, userToken, params) => {
-    var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
+    var host = process.env.VUE_APP_API_URL || 'http://35.208.67.156:8080';
     var url = new URL(host+methodUrl);
     if (params) {
         url.search = new URLSearchParams(params).toString();
@@ -34,7 +34,7 @@ const handleBasic = (methodUrl, userToken, params) => {
 }
 
 const handleGet = (methodUrl, userToken, params) => {
-    var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
+    var host = process.env.VUE_APP_API_URL || 'http://35.208.67.156:8080';
     var url = new URL(host+methodUrl);
     if (params) {
         url.search = new URLSearchParams(params).toString();
@@ -52,7 +52,7 @@ const handleGet = (methodUrl, userToken, params) => {
 }
 
 const handlePost = (methodUrl, userToken, payload) => {
-    var host = process.env.VUE_APP_API_URL || 'http://34.68.202.207:8080';
+    var host = process.env.VUE_APP_API_URL || 'http://35.208.67.156:8080';
     var url = host+methodUrl;
     var result = fetch( url, {
         method: "POST",
