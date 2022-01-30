@@ -136,7 +136,7 @@ export default {
             photo: this.img1,
             caption: this.caption        
           }
-          firebase.firestore().ref('PhotoGallery').push(post)
+          firebase.database().ref('photos').push(post)
           .then((response) => {
             console.log(response)
           })
