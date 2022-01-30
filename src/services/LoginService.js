@@ -2,7 +2,7 @@ import FetchUtil from '../utils/FetchUtil.vue';
 
 const submitLogin = function (uname, password) {
     const loginToken = "Basic "+window.btoa(uname+":"+password)
-    let res = FetchUtil.handleLogin('/login', loginToken, null);
+    let res = FetchUtil.handleBasic('/login', loginToken, null);
     res
         .then(response => {
           if (response.status === 200) {

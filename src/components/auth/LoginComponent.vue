@@ -1,26 +1,47 @@
 <template>
-   
+  <div>
+  <slot>  </slot>
+   <v-row justify="center">
+    <v-dialog
+      v-model="$attrs.dialog"
+      persistent
+      max-width="600px"
+    >
   <v-form
     ref="form"
-    v-model="valid"
-    lazy-validation
     @keyup.enter.native="handleLoginSubmit"
   >
-    <v-text-field
-      v-model="unameRef"
-      :counter="10"
-      :rules="nameRules"
-      label="User Name"
-      required
-    ></v-text-field>
+   <v-card>
+        <v-card-title>
+          <span class="text-h5">Login</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  v-model="unameRef"
+                  :counter="10"
+                  :rules="nameRules"
+                  label="User Name"
+                  required
+                ></v-text-field>
 
-    <v-text-field
-      v-model="pwordRef"
-      :rules="passwordRules"
-      label="Password"
-      required
-    ></v-text-field>
-
+                <v-text-field
+                  v-model="pwordRef"
+                  :rules="passwordRules"
+                  label="Password"
+                  required
+                ></v-text-field>
+              </v-col>
+          </v-row>
+  </v-container>    
+  </v-card-text>
+  <v-card-actions>
     <v-btn
       color="success"
       class="mr-4"
@@ -33,30 +54,32 @@
       class="mr-4"
       @click="reset"
     >
-      Reset Form
+      Reset Password
     </v-btn>
 
     <v-btn
       color="warning"
-      @click="resetValidation"
+      @click="$attrs.register"
     >
-      Reset Validation
+      Register
     </v-btn>
+  </v-card-actions>
+   </v-card>
   </v-form>
+  </v-dialog>
+   </v-row>
+  </div>
 </template>
 <script>
 import LoginService from '../../services/LoginService';
 
 export default {
     data: () => ({
-     // token: this.checkToken(),
-      loginModel: {
+     loginModel: {
         userId: '',
         userName: '',
         password: '',
-        roleId: '',
-        bizId: '',
-        adminId: ''
+        role: ''
       },
       roleModel: {
         id: '',
@@ -70,10 +93,10 @@ export default {
       },
       actionType: '',
       role: '',
-      bizId: '',
+      itemId: '',
       adminId: '',
      // appBarColor: this.getColor(),
-      selectedBizList: [],
+      selectedItemList: [],
       valid: true,
       nameRules: [
         v => !!v || 'User Name is required',
@@ -123,13 +146,12 @@ export default {
         this.$store.userToken = token; 
         this.setPersonModel(loginJson.person);
         this.setLoginModel(loginJson.user);
-        this.role = loginJson.user.roleType;
-        this.bizId = loginJson.user.bizId;
+        this.role = loginJson.user.role;
 
         localStorage.setItem('role', this.role);
         localStorage.setItem('token', token);
-        let route = "/biz";
-        if (this.role === 'SUPER') {
+        let route = "/item";
+        if (this.role === 'admin') {
           route = "/admin"
         }
         this.$router.push(route);
@@ -146,40 +168,33 @@ export default {
       },
 
       checkToken() {
-      let localToken = localStorage.getItem('token');
-      if (localToken) {
-        return localToken;
-      }
-        return '';
+        let localToken = localStorage.getItem('token');
+        if (localToken) {
+          return localToken;
+        }
+          return '';
       },
 
       setPersonModel(personJson) {
-      this.personModel = {
-        id: personJson ? personJson.id : '',
-        fName: personJson ? personJson.fName : '',
-        lName: personJson ? personJson.lName : ''
-      }
-    },
-    setLoginModel(userJson) {
-      this.loginModel = {
-        userId: userJson ? userJson.userId : '',
-        userName: userJson ? userJson.userName : '',
-        roleId: userJson ? userJson.roleId : '',
-        bizId: userJson ? userJson.bizId : '',
-        adminId: userJson ? userJson.adminId : ''
+        this.personModel = {
+          id: personJson ? personJson.id : '',
+          fName: personJson ? personJson.fName : '',
+          lName: personJson ? personJson.lName : ''
+        }
       },
-      this.roleModel = {
-        id: userJson ? userJson.roleId : '',
-        roleName: userJson ? userJson.roleName : '',
-        roleType: userJson ? userJson.roleType : ''        
+
+      setLoginModel(userJson) {
+        this.loginModel = {
+          userId: userJson ? userJson.userId : '',
+          userName: userJson ? userJson.userName : '',
+          role: userJson ? userJson.role : '',
+        }
+        this.roleModel = {
+          id: userJson ? userJson.roleId : '',
+          roleName: userJson ? userJson.roleName : '',
+          roleType: userJson ? userJson.roleType : ''        
+        }
       },
-      this.adminId = userJson ? userJson.adminId : '',
-      this.$store.profile = {
-        bizId: userJson.bizId,
-        role: userJson.roleType
-      },
-      this.$store.adminId = userJson.userId
     },
-    },
-  }
+}
 </script>

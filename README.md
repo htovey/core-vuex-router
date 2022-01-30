@@ -32,3 +32,10 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### install firebase
+
+```
+yarn add firebase@8
+```

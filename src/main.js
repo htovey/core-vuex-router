@@ -5,6 +5,7 @@ import store from './store'
 import Vuetify from 'vuetify/lib'
 import colors from 'vuetify/lib/util/colors'
 import './assets/main.css'
+import './includes/firebase'
 
 const vuetify = new Vuetify({
     theme: {
@@ -21,12 +22,6 @@ const vuetify = new Vuetify({
       },
     },
   })
-  
-// const app = createApp(App);
-// app.use(store);
-// app.use(router)
-// app.use(vuetify);
-// app.mount('#app')
 
 Vue.use(Vuetify)
 
@@ -34,5 +29,5 @@ new Vue({
   router,
   store,
   vuetify,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')
