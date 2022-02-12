@@ -33,7 +33,11 @@ export default {
                 {
                     text: 'Category',
                     value: 'category'
-                }
+                },
+                // {
+                //     text: 'url',
+                //     value: 'imageUrl'
+                // }
             ],
             selected: []
         }

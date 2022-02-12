@@ -19,7 +19,8 @@ const createUpdateItem = function (token, actionType, item) {
         'name' : item.name,
         'category' : item.category,
         'description' : item.description,
-        'id' : actionType === 'update' ? item.id : null
+        'id' : actionType === 'update' ? item.id : null,
+        'imageUrl' : item.img_url
     }
     var response = FetchUtil.handlePost(url, token, JSON.stringify(payload))
     .then(response => {

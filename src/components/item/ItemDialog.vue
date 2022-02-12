@@ -32,7 +32,11 @@
       label="Description"
       required
     ></v-text-field>
-
+    <v-img 
+      class="image-window"
+      v-model="itemImgRef"
+      :src="itemImgRef">
+    </v-img>
     <v-btn
       color="success"
       class="mr-4"
@@ -49,7 +53,7 @@
     </v-btn>
   </v-form>
   
-  <v-container>
+  <v-container class="upload-window">
     <v-layout row>
       <v-flex class="text-center font-weight-black">
         <h1>Upload a photo</h1>
@@ -76,17 +80,8 @@
        </v-flex>
     </v-layout>
     <v-layout row>
-      <v-flex md6 offset-sm3 class="text-center">
-        <v-text-field
-        solo
-        v-model="caption"
-        label="Caption goes here">
-        </v-text-field>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
       <v-flex class="text-center">
-        <v-btn color="pink" @click="upload">upload</v-btn>
+        <v-btn color="pink" @click="onUpload">upload</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -94,7 +89,6 @@
 </template>
 <script>
 import { CATEGORIES } from '../../constants/ItemCategories';
-//import {db} from '../../includes/firebase';
 import firebase from 'firebase/app';
 
 export default {
@@ -109,6 +103,7 @@ export default {
         itemNameRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.name : '',
         itemCategoryRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.category : '',
         itemDescRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.description : '',
+        itemImgRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.imageUrl : '',
         nameRules: [
           v => !!v || 'Item Name is required',
         // v => (v && v.length <= 10) || 'Name must be less than 10 characters',
@@ -126,33 +121,24 @@ export default {
             "name": this.itemNameRef,
             "category": this.itemCategoryRef,
             "description": this.itemDescRef,
-            "id": this.itemid
+            "id": this.itemid,
+            "img_url": this.itemImgRef
           }
           this.$parent.handleItemSubmit(item);
         },
         
-        upload() {
-          const post = {
-            photo: this.img1,
-            caption: this.caption        
-          }
-          firebase.database().ref('photos').push(post)
-          .then((response) => {
-            console.log(response)
-          })
-          .catch(err => {
-            console.log(err)
-          })
-        },
         onUpload(){
           this.img1=null;
-          const storageRef=firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-          storageRef.on(`state_changed`,snapshot=>{
-          this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+          const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
+          storageRef.on(`state_changed`, snapshot => {
+              this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
             }, error=>{console.log(error.message)},
-          ()=>{this.uploadValue=100;
-              storageRef.snapshot.ref.getDownloadURL().then((url)=>{
-                  this.img1 =url;
+            ()=>{
+              this.uploadValue = 100;
+              storageRef.snapshot.ref.getDownloadURL()
+              .then((url)=>{
+                  this.img1 = url;
+                  this.itemImgRef = this.img1;
                   console.log(this.img1)
                 });
               }      
@@ -167,7 +153,7 @@ export default {
           this.uploadValue=0;
           this.img1=null;
           this.imageData = event.target.files[0];
-          this.onUpload()
+         // this.onUpload()
         },
 
         cancel() {
@@ -188,3 +174,15 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+  .image-window {
+    height: 300px;
+    width: 300px;
+    margin: 5px 0 10px 10px;
+  }
+
+  .upload-window {
+    margin-top: -350px;
+    margin-right: -200px;
+  }
+</style>
