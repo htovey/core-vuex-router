@@ -16,6 +16,7 @@
           <span class="text-h5">Login</span>
         </v-card-title>
         <v-card-text>
+          <h2 style="color: red;">{{errorMessage}}</h2>
           <v-container>
             <v-row>
               <v-col
@@ -28,6 +29,7 @@
                   :counter="10"
                   :rules="nameRules"
                   label="User Name"
+                  @focus="resetError"
                   required
                 ></v-text-field>
 
@@ -35,6 +37,7 @@
                   v-model="pwordRef"
                   :rules="passwordRules"
                   label="Password"
+                  @focus="resetError"
                   required
                 ></v-text-field>
               </v-col>
@@ -71,10 +74,12 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex';
 import LoginService from '../../services/LoginService';
 
 export default {
     data: () => ({
+     errorMessage: '', 
      loginModel: {
         userId: '',
         userName: '',
@@ -95,8 +100,6 @@ export default {
       role: '',
       itemId: '',
       adminId: '',
-     // appBarColor: this.getColor(),
-      selectedItemList: [],
       valid: true,
       nameRules: [
         v => !!v || 'User Name is required',
@@ -109,6 +112,7 @@ export default {
     }),
 
     methods: {
+      ...mapActions(['login']),
       validate () {
         this.$refs.form.validate()
       },
@@ -129,12 +133,15 @@ export default {
           LoginService.submitLogin(uname, password)
           .then((response) => {
             //this.reset();
-            var userToken = response.headers.get('authorization');
-            response.json()
-            .then((json) => {
-              this.handleLoginSuccess(userToken, json);
-            //this.props.handleLoginSuccess(json, userToken);
-            });
+            if (response.status === 200) {
+              var userToken = response.headers.get('authorization');
+              response.json()
+              .then((json) => {
+                this.handleLoginSuccess(userToken, json);
+              });
+            } else if (response.status === 401) {
+              this.handleError('Invalid Username or Password.  Please try again.');
+            }
           })    
           .catch(() => {
               this.handleError('Login failed. Please try again.');
@@ -142,8 +149,8 @@ export default {
         }
       },
 
-      handleLoginSuccess(token, loginJson) {
-        this.$store.userToken = token; 
+      handleLoginSuccess(token, loginJson) { 
+        this.login(token);
         this.setPersonModel(loginJson.person);
         this.setLoginModel(loginJson.user);
         this.role = loginJson.user.role;
@@ -158,15 +165,12 @@ export default {
       },
 
       handleError(msg){
-        console.log(msg+' LoginComponent handleError()');
-        // if(this.props.openLogin === true) {
-        //     this.setState({ 
-        //       error: msg,
-        //       loading: false
-        //     });
-        // }
+        this.errorMessage = msg;
       },
 
+      resetError() {
+        this.errorMessage = '';
+      },
       checkToken() {
         let localToken = localStorage.getItem('token');
         if (localToken) {

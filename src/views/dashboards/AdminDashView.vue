@@ -57,6 +57,7 @@ import ItemListComponent from '../../components/item/ItemListComponent.vue';
 import ItemDialog from '../../components/item/ItemDialog.vue';
 import ItemToolbar from '../../components/item/ItemToolbar.vue';
 import ItemService from '../../services/ItemService';
+import ImageService from '../../services/ImageService';
 import { mapMutations } from 'vuex';
  
 export default {
@@ -86,7 +87,7 @@ export default {
       this.$router.push('/');
     },
     getItemList() {
-      ItemService.getItemList(this.$store.userToken)
+      ItemService.getItemList(this.$store.getters.token)
       .then(response => {
         const headers = response.headers;
         response.json()
@@ -112,6 +113,7 @@ export default {
       })
       console.log('set item list in state');
       this.itemlist = myItemList;
+      this.$store.itemList = myItemList;
       console.log('BIZ LIST length: '+this.itemlist.length);
     },
 
@@ -146,6 +148,15 @@ export default {
           }
         }).catch(error => console.log(error));
         
+    },
+
+    handleImageLinks(imageList, itemId) {
+      let imageRecords = [];
+      imageList.forEach((imgUrl) => {
+        imageRecords.push({itemId, imgUrl});
+      });
+
+      ImageService.saveImageLinks(this.$store.userToken, imageRecords);
     },
 
     handleSuccess(action, entity) {

@@ -32,11 +32,11 @@
       label="Description"
       required
     ></v-text-field>
-    <v-img 
+    <!-- <v-img 
       class="image-window"
       v-model="itemImgRef"
       :src="itemImgRef">
-    </v-img>
+    </v-img> -->
     <v-btn
       color="success"
       class="mr-4"
@@ -52,126 +52,94 @@
         Cancel
     </v-btn>
   </v-form>
-  
-  <v-container class="upload-window">
-    <v-layout row>
-      <v-flex class="text-center font-weight-black">
-        <h1>Upload a photo</h1>
-      </v-flex>
-    </v-layout>
-
-   
-    <v-layout row>
-      <v-flex  md6 offset-sm3 >
-       <div>
-         <div >
-           <v-btn @click="click1">choose photo</v-btn>
-           <input type="file" ref="input1"
-            style="display: none"
-            @change="previewImage" accept="image/*" >                
-         </div>
- 
-       <div v-if="imageData!=null">                     
-          <img class="preview" height="268" width="356" :src="img1">
-       <br>
-       </div>   
-      
-       </div>
-       </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex class="text-center">
-        <v-btn color="pink" @click="onUpload">upload</v-btn>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <image-panel :imageList="itemImageList"></image-panel>
+  <image-upload :newImageList="newImageList"></image-upload>
 </div>
 </template>
 <script>
 import { CATEGORIES } from '../../constants/ItemCategories';
-import firebase from 'firebase/app';
+import ImageUpload from '../../components/ImageUploadComponent.vue';
+import ImagePanel from '../../components/ImagePanelComponent.vue';
+import ImageService from '../../services/ImageService';
 
 export default {
-    data() {
-      return {
-        caption: '',
-        imageData: {},
-        img1: {},
-        valid: true,
-        //item: this.$attrs.selectedItem,
-        actionType: this.$parent.actionType,
-        itemNameRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.name : '',
-        itemCategoryRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.category : '',
-        itemDescRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.description : '',
-        itemImgRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.imageUrl : '',
-        nameRules: [
-          v => !!v || 'Item Name is required',
-        // v => (v && v.length <= 10) || 'Name must be less than 10 characters',
-        ],
-        categoryRules: [
-          v => !!v || 'Item category is required',
-        // v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-        ],
-        itemCategoryList: this.buildItemCategoryList(),
+  components: { 
+    ImageUpload,
+    ImagePanel
+  },
+  data() {
+    return {
+      caption: '',
+      valid: true,
+      //item: this.$attrs.selectedItem,
+      actionType: this.$parent.actionType,
+      itemNameRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.name : '',
+      itemCategoryRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.category : '',
+      itemDescRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.description : '',
+      //itemImgRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.imageUrl : '',
+      itemId: this.$attrs.selectedItem ? this.$attrs.selectedItem.id : '',
+      nameRules: [
+        v => !!v || 'Item Name is required',
+      // v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+      ],
+      categoryRules: [
+        v => !!v || 'Item category is required',
+      // v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ],
+      itemCategoryList: this.buildItemCategoryList(),
+      itemImageList: this.getImageList(this.$attrs.selectedItem.id),
+      newImageList: [],
+    }
+  },
+  methods: {
+    itemFormSubmit() {
+      let item = {
+        "name": this.itemNameRef,
+        "category": this.itemCategoryRef,
+        "description": this.itemDescRef,
+        "id": this.itemId,
+        //"img_url": this.itemImgRef
+      }
+      this.$parent.handleItemSubmit(item);
+
+      if (this.newImageList.length > 0) {
+        this.$parent.handleImageLinks(this.newImageList, this.itemId);
       }
     },
-    methods: {
-        itemFormSubmit() {
-          let item = {
-            "name": this.itemNameRef,
-            "category": this.itemCategoryRef,
-            "description": this.itemDescRef,
-            "id": this.itemid,
-            "img_url": this.itemImgRef
-          }
-          this.$parent.handleItemSubmit(item);
-        },
-        
-        onUpload(){
-          this.img1=null;
-          const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-          storageRef.on(`state_changed`, snapshot => {
-              this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
-            }, error=>{console.log(error.message)},
-            ()=>{
-              this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL()
-              .then((url)=>{
-                  this.img1 = url;
-                  this.itemImgRef = this.img1;
-                  console.log(this.img1)
-                });
-              }      
-            );
-        },
+    
+    cancel() {
+      this.$parent.toggleItem();
+    },
 
-        click1() {
-          this.$refs.input1.click()   
-        },
+    getImageList(itemId) {
+      ImageService.getImageList(this.$store.userToken, itemId)
+      .then(response => {
+        const headers = response.headers;
+        response.json()
+        .then(json => {
+          if (response.ok) {          
+            //this.toggleListView(roleType, json);
+            this.itemImageList = json;
+          } else {
+            var error = headers.get('TokenError');
+            console.log(error);
+            //this.getParent().handleResponseError(error, 'getPersonList');
+          }  
+        })
+      })
+      .catch(() => console.log('Image Service failed'));
+    },
 
-        previewImage(event) {
-          this.uploadValue=0;
-          this.img1=null;
-          this.imageData = event.target.files[0];
-         // this.onUpload()
-        },
-
-        cancel() {
-          this.$parent.toggleItem();
-        },
-
-        buildItemCategoryList() {
-          let itemCategoryList = CATEGORIES.map(function(itemCategory) {
-            if (itemCategory.value === '') {
-              // return <MenuItem classes={{"root": "disabledItem"}} disabled key={itemCategory.value} value={itemCategory.value}>{itemCategory.label}</MenuItem>
-              return ''
-            }
-            // return <MenuItem key={itemCategory.value} value={itemCategory.value}>{itemCategory.label}</MenuItem>
-            return {text: itemCategory.label, value: itemCategory.value}
-          });
-          return itemCategoryList;
+    buildItemCategoryList() {
+      let itemCategoryList = CATEGORIES.map(function(itemCategory) {
+        if (itemCategory.value === '') {
+          return ''
         }
+        return {text: itemCategory.label, value: itemCategory.value}
+      });
+      return itemCategoryList;
     }
+  }
 }
 </script>
 <style lang="scss">
