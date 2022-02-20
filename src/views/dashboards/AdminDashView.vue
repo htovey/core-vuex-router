@@ -7,12 +7,6 @@
         :vertical="true"
         timeout="4000"
       >{{snackbar.msg}}</v-snackbar>
-      <v-overlay :value="loading">
-        <v-progress-circular
-          indeterminate
-          size="64"
-        ></v-progress-circular>
-      </v-overlay>
     </template>
     <template>  
       <v-app-bar 
@@ -54,6 +48,12 @@
         :selectedItem="selectedItemList[0]"></item-dialog>
     </template>
     <template v-else>
+      <v-overlay :value="loading">
+        <v-progress-circular
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
       <item-list-component></item-list-component>
     </template>
   </div>
@@ -75,7 +75,7 @@ export default {
   name: 'AdminDashView',
   data() {
     return {
-      loading: false,
+      loading: true,
       msg: '',
       itemlist: this.getItemList(),
       actionType: '',
@@ -94,7 +94,7 @@ export default {
       this.$router.push('/');
     },
     getItemList() {
-      this.loading = true;
+    //  this.loading = true;
       ItemService.getItemList(this.$store.getters.token)
       .then(response => {
         const headers = response.headers;

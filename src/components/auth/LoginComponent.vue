@@ -7,6 +7,12 @@
       persistent
       max-width="600px"
     >
+  <v-overlay :value="loading">
+    <v-progress-circular
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>  
   <v-form
     ref="form"
     @keyup.enter.native="handleLoginSubmit"
@@ -79,8 +85,9 @@ import LoginService from '../../services/LoginService';
 
 export default {
     data: () => ({
-     errorMessage: '', 
-     loginModel: {
+      loading: false,
+      errorMessage: '', 
+      loginModel: {
         userId: '',
         userName: '',
         password: '',
@@ -127,6 +134,7 @@ export default {
       },
 
       handleLoginSubmit () {
+        this.loading = true;
         if(this.valid) {
           let uname = this.unameRef.valueOf();
           let password = this.pwordRef.valueOf();
@@ -145,6 +153,9 @@ export default {
           })    
           .catch(() => {
               this.handleError('Login failed. Please try again.');
+          })
+          .finally(() => {
+            this.loading = false;
           });
         }
       },
