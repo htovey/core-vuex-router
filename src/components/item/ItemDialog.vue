@@ -4,7 +4,7 @@
     ref="form"
     v-model="valid"
     lazy-validation
-    
+    class="item-form"
   >
     <v-text-field
       v-model="itemNameRef"
@@ -12,6 +12,7 @@
       :counter="10"
       :rules="nameRules"
       label="Item Name"
+      outlined
       required
     ></v-text-field>
 
@@ -19,6 +20,7 @@
       v-model="itemCategoryRef"
       ref="itemCategoryRef"
       label="Category"
+      outlined
       required
       :items="itemCategoryList"
       :rules="categoryRules"  
@@ -30,6 +32,7 @@
       ref="itemDescRef"
       :counter="10"
       label="Description"
+      outlined
       required
     ></v-text-field>
     <!-- <v-img 
@@ -52,8 +55,8 @@
         Cancel
     </v-btn>
   </v-form>
-  <image-panel :imageList="itemImageList"></image-panel>
-  <image-upload :newImageList="newImageList"></image-upload>
+  <image-panel :imageList="itemImageList" :newImageList="newImageList"></image-panel>
+  <image-upload :itemId="itemId" :newImageList="newImageList"></image-upload>
 </div>
 </template>
 <script>
@@ -71,12 +74,13 @@ export default {
     return {
       caption: '',
       valid: true,
+      token: this.$store.getters.token,
       //item: this.$attrs.selectedItem,
       actionType: this.$parent.actionType,
       itemNameRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.name : '',
       itemCategoryRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.category : '',
       itemDescRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.description : '',
-      //itemImgRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.imageUrl : '',
+      itemImgRef: this.$attrs.selectedItem ? this.$attrs.selectedItem.imageUrl : '',
       itemId: this.$attrs.selectedItem ? this.$attrs.selectedItem.id : '',
       nameRules: [
         v => !!v || 'Item Name is required',
@@ -87,7 +91,7 @@ export default {
       // v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
       itemCategoryList: this.buildItemCategoryList(),
-      itemImageList: this.getImageList(this.$attrs.selectedItem.id),
+      itemImageList: [],
       newImageList: [],
     }
   },
@@ -98,21 +102,27 @@ export default {
         "category": this.itemCategoryRef,
         "description": this.itemDescRef,
         "id": this.itemId,
-        //"img_url": this.itemImgRef
+        "img_url": this.getImageUrl(),
       }
-      this.$parent.handleItemSubmit(item);
-
-      if (this.newImageList.length > 0) {
-        this.$parent.handleImageLinks(this.newImageList, this.itemId);
-      }
+      this.$attrs.handleItemSubmit(item, this.newImageList)   
     },
-    
+
+    getImageUrl() {
+      let url = null;
+      if (this.itemImageList.length > 0) {
+        url = this.itemImageList[0].url;
+      } else if (this.newImageList.length > 0) {
+        url = this.newImageList[0].url;
+      }
+      return url;
+    },
+
     cancel() {
       this.$parent.toggleItem();
     },
 
     getImageList(itemId) {
-      ImageService.getImageList(this.$store.userToken, itemId)
+      ImageService.getImageList(this.token, itemId)
       .then(response => {
         const headers = response.headers;
         response.json()
@@ -139,10 +149,18 @@ export default {
       });
       return itemCategoryList;
     }
-  }
+  },
+  created() {
+    this.itemImageList = this.getImageList(this.$attrs.selectedItem.id);
+  },
 }
 </script>
 <style lang="scss">
+  .item-form {
+    width: 40%;
+    margin: 60px 60px;
+  }
+
   .image-window {
     height: 300px;
     width: 300px;
@@ -151,6 +169,7 @@ export default {
 
   .upload-window {
     margin-top: -350px;
-    margin-right: -200px;
+    margin-right: 0px;
+    width: 45%
   }
 </style>

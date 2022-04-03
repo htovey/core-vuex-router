@@ -7,8 +7,8 @@ const getImageList = function (token, viewId) {
 }
 
 const saveImageLinks = function (token, imageList) {
-    const url = 'image/save';
-    return FetchUtil.handlePost(url, token, JSON.stringify(imageList));
+    const url = '/image/saveLinks';
+    return FetchUtil.handlePut(url, token, JSON.stringify(imageList));
 }
 
 const createImageLink = function (token, actionType, item) {

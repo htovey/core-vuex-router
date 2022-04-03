@@ -1,76 +1,81 @@
 <template>
   <div>
-  <slot>  </slot>
-   <v-row justify="center">
-    <v-dialog
-      v-model="$attrs.dialog"
-      persistent
-      max-width="600px"
-    >
-  <v-form
-    ref="form"
-    @keyup.enter.native="handleLoginSubmit"
-  >
-   <v-card>
-        <v-card-title>
-          <span class="text-h5">Login</span>
-        </v-card-title>
-        <v-card-text>
-          <h2 style="color: red;">{{errorMessage}}</h2>
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
+    <v-row justify="center">
+      <v-dialog
+        v-model="$attrs.dialog"
+        persistent
+        max-width="600px"
+      >
+        <v-overlay :value="loading">
+          <v-progress-circular
+            indeterminate
+            size="64"
+          ></v-progress-circular>
+        </v-overlay>
+        <v-form
+          ref="form"
+          @keyup.enter.native="handleLoginSubmit"
+        >
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Login</span>
+            </v-card-title>
+            <v-card-text>
+              <h2 style="color: red;">{{errorMessage}}</h2>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="unameRef"
+                      :counter="10"
+                      :rules="nameRules"
+                      label="User Name"
+                      @focus="resetError"
+                      required
+                    ></v-text-field>
+
+                    <v-text-field
+                      v-model="pwordRef"
+                      :rules="passwordRules"
+                      label="Password"
+                      @focus="resetError"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>    
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="success"
+                class="mr-4"
+                @click="handleLoginSubmit"
               >
-                <v-text-field
-                  v-model="unameRef"
-                  :counter="10"
-                  :rules="nameRules"
-                  label="User Name"
-                  @focus="resetError"
-                  required
-                ></v-text-field>
+                Login
+              </v-btn>
+              <v-btn
+                color="error"
+                class="mr-4"
+                @click="reset"
+              >
+                Reset Password
+              </v-btn>
 
-                <v-text-field
-                  v-model="pwordRef"
-                  :rules="passwordRules"
-                  label="Password"
-                  @focus="resetError"
-                  required
-                ></v-text-field>
-              </v-col>
-          </v-row>
-  </v-container>    
-  </v-card-text>
-  <v-card-actions>
-    <v-btn
-      color="success"
-      class="mr-4"
-      @click="handleLoginSubmit"
-    >
-      Login
-    </v-btn>
-    <v-btn
-      color="error"
-      class="mr-4"
-      @click="reset"
-    >
-      Reset Password
-    </v-btn>
-
-    <v-btn
-      color="warning"
-      @click="$attrs.register"
-    >
-      Register
-    </v-btn>
-  </v-card-actions>
-   </v-card>
-  </v-form>
-  </v-dialog>
-   </v-row>
+              <v-btn
+                color="warning"
+                @click="$attrs.register"
+              >
+                Register
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 <script>
@@ -79,36 +84,37 @@ import LoginService from '../../services/LoginService';
 
 export default {
     data: () => ({
-     errorMessage: '', 
-     loginModel: {
-        userId: '',
-        userName: '',
-        password: '',
-        role: ''
-      },
-      roleModel: {
-        id: '',
-        roleName: '',
-        roleType: '',
-      },
-      personModel: {
-        id: '',
-        fName: '',
-        lName: ''
-      },
-      actionType: '',
-      role: '',
-      itemId: '',
-      adminId: '',
-      valid: true,
-      nameRules: [
-        v => !!v || 'User Name is required',
-      ],
-      unameRef: '',
-      pwordRef: '',
-      passwordRules: [
-        v => !!v || 'Password is required',
-      ],
+      loading: false,
+      errorMessage: '', 
+      loginModel: {
+          userId: '',
+          userName: '',
+          password: '',
+          role: ''
+        },
+        roleModel: {
+          id: '',
+          roleName: '',
+          roleType: '',
+        },
+        personModel: {
+          id: '',
+          fName: '',
+          lName: ''
+        },
+        actionType: '',
+        role: '',
+        itemId: '',
+        adminId: '',
+        valid: true,
+        nameRules: [
+          v => !!v || 'User Name is required',
+        ],
+        unameRef: '',
+        pwordRef: '',
+        passwordRules: [
+          v => !!v || 'Password is required',
+        ],
     }),
 
     methods: {
@@ -127,6 +133,7 @@ export default {
       },
 
       handleLoginSubmit () {
+        this.loading = true;
         if(this.valid) {
           let uname = this.unameRef.valueOf();
           let password = this.pwordRef.valueOf();
@@ -145,6 +152,9 @@ export default {
           })    
           .catch(() => {
               this.handleError('Login failed. Please try again.');
+          })
+          .finally(() => {
+            this.loading = false;
           });
         }
       },
@@ -160,8 +170,12 @@ export default {
         let route = "/item";
         if (this.role === 'admin') {
           route = "/admin"
+        } else {
+          route = "/catalog"
         }
         this.$router.push(route);
+        this.userModel = {};
+        this.$refs.form.reset();
       },
 
       handleError(msg){

@@ -1,3 +1,22 @@
 .modal-form {
   width: 40%;
 }
+
+.guns {
+  background-color: blue;
+}
+.cars {
+  background-color: green;
+}
+.tools {
+  background-color: gray;
+}
+.other {
+  background-color: lightblue;
+}
+.knives {
+  background-color: lightgreen;
+}
+.coins {
+  background-color: lightgray;
+}

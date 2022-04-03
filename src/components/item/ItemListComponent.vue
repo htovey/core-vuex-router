@@ -2,7 +2,7 @@
     <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="this.$parent.itemlist"
+        :items="$attrs.itemList"
         :items-per-page="10"
         class="elevation-1"
         show-select
@@ -15,6 +15,7 @@ export default {
     data() {
         return {
             componentName: '',
+            itemList: this.$attrs.itemList,
             headers: [
                 {
                     text: 'ID',

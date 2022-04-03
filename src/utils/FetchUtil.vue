@@ -67,5 +67,21 @@ const handlePost = (methodUrl, userToken, payload) => {
     return result;
 }
 
-export default {handleBasic, handleGet, handlePost, handleRegistration}
+const handlePut = (methodUrl, userToken, payload) => {
+    var host = process.env.VUE_APP_API_URL || 'http://35.208.67.156:8080';
+    var url = host+methodUrl;
+    var result = fetch( url, {
+        method: "PUT",
+        headers: {
+            "Content-Type" : "application/json",
+            "Accept": "application/json",
+            "Authorization" : "Bearer "+userToken
+        },
+        body: payload
+    });
+
+    return result;
+}
+
+export default {handleBasic, handleGet, handlePost, handlePut, handleRegistration}
 </script>

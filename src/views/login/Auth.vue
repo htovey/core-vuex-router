@@ -40,7 +40,7 @@ export default {
 
     methods: {
       toggleRegister () {
-        this.doRegister = true;
+        this.doRegister = !this.doRegister;
       },
       validate () {
         this.$refs.form.validate()

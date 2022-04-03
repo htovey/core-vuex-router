@@ -1,8 +1,9 @@
 import FetchUtil from '../utils/FetchUtil.vue';
 
-const getItemList = function (token) {
+const getItemList = function (token, category) {
     const url = '/item/itemList';
-    return FetchUtil.handleGet(url, token);
+    var params = {"category" : category || ''};
+    return FetchUtil.handleGet(url, token, params);
 }
 
 const getItemIdList = function(selectedRows) {

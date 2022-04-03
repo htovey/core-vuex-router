@@ -51,10 +51,11 @@
     <template v-if="this.openItemForm"> 
       <item-dialog 
         :actionType="this.actionType"
-        :selectedItem="selectedItemList[0]"></item-dialog>
+        :selectedItem="selectedItemList[0]"
+        :handleItemSubmit="handleItemSubmit"></item-dialog>
     </template>
     <template v-else>
-      <item-list-component></item-list-component>
+      <item-list-component :itemList="itemList"></item-list-component>
     </template>
   </div>
 </template>
@@ -75,9 +76,10 @@ export default {
   name: 'AdminDashView',
   data() {
     return {
+      userToken: this.$store.getters.token,
       loading: false,
       msg: '',
-      itemlist: this.getItemList(),
+      itemList: [],
       actionType: '',
       selectedItemList: [],
       openItemForm: false,
@@ -89,13 +91,22 @@ export default {
   },
   methods: {
     ...mapMutations(['logout']),
+    beforeMount() {
+      console.log('before mount');
+    },
+    beforeCreate() {
+      console.log('beforeCreate()');
+    },
+    created() {
+      console.log('CREATED');
+    },
     adminLogout() {
       this.logout;
       this.$router.push('/');
     },
     getItemList() {
       this.loading = true;
-      ItemService.getItemList(this.$store.getters.token)
+      ItemService.getItemList(this.userToken)
       .then(response => {
         const headers = response.headers;
         response.json()
@@ -123,9 +134,9 @@ export default {
         myItemList.push(item);
       })
       console.log('set item list in state');
-      this.itemlist = myItemList;
+      this.itemList = myItemList;
       this.$store.itemList = myItemList;
-      console.log('BIZ LIST length: '+this.itemlist.length);
+      console.log('LIST length: '+this.itemList.length);
     },
 
     handleResponseError(error, method) {
@@ -148,44 +159,26 @@ export default {
         }
     },
 
-    handleItemSubmit(item) {
+    handleItemSubmit(item, newImageList) {
         ItemService.createUpdateItem(
-          this.$store.userToken,
+          this.userToken,
           this.actionType,
           item
         ).then(response => {
           if (response.ok) {
-            this.handleSuccess(this.actionType, 'item');
+            if (newImageList.length > 0) {
+              ImageService.saveImageLinks(this.userToken, newImageList)
+                .then(() => {
+                  this.handleSuccess(this.actionType, 'item');
+                });
+            }
           }
         }).catch(error => console.log(error));
         
     },
 
-    handleImageLinks(imageList, itemId) {
-      let imageRecords = [];
-      imageList.forEach((imgUrl) => {
-        imageRecords.push({itemId, imgUrl});
-      });
-
-      ImageService.saveImageLinks(this.$store.userToken, imageRecords);
-    },
-
     handleSuccess(action, entity) {
-      var actionType = 'created';
-      var entityType = 'User';
-      if (action === 'update') {
-        this.actionType = 'updated';
-      }
-
-      if (action === 'delete') {
-        actionType = 'deleted'
-      }
-
-      if (entity === 'item') {
-        entityType = 'Business'
-      }
-
-      this.snackbar.msg = 'Success! '+entityType+' has been '+actionType+'.';
+      this.snackbar.msg = 'Success!';
       this.snackbar.open = true;
       this.updateView(action, entity);
     },
@@ -227,11 +220,14 @@ export default {
       this.$router.push('/item');
     }
 
-  }
+  },
+  created() {
+    this.itemList = this.getItemList();
+  },
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
   $color: rgb(57, 75, 57);
   .theme--light {
     h3 {
@@ -244,6 +240,12 @@ export default {
     .v-toolbar .v-sheet {
       background-color: transparent;
       box-shadow: none;
+    }
+    .v-toolbar .v-btn {
+      margin-left: 10px;
+    }
+    .v-btn {
+      margin-left: 10px;
     }
   }
 </style>
