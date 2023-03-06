@@ -6,6 +6,12 @@
         persistent
         max-width="600px"
       >
+  <v-overlay :value="loading">
+    <v-progress-circular
+      indeterminate
+      size="64"
+    ></v-progress-circular>
+  </v-overlay>  
         <v-overlay :value="loading">
           <v-progress-circular
             indeterminate
