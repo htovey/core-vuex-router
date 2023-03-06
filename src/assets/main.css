@@ -1,7 +1,16 @@
+html, body {
+  display: grid;
+}
+.v-application {
+  display: grid;
+  background-color: transparent;
+}
+.v-main .home {
+  display: grid;
+}
 .modal-form {
   width: 40%;
 }
-
 .guns {
   background-color: blue;
 }

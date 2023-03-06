@@ -58,10 +58,10 @@ import ItemService from '../../services/ItemService'
     }
 </script>
 <style lang="scss" scoped>
-     .theme--light {
-        .v-toolbar .v-sheet {
-            background-color: transparent;
-            box-shadow: none;
-        }
-     }
+    //  .theme--light {
+    //     .v-toolbar .v-sheet {
+    //         background-color: transparent;
+    //         box-shadow: none;
+    //     }
+    //  }
 </style>

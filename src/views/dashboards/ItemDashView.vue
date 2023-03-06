@@ -90,23 +90,24 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-    .wrapper {
-        width: 1000px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .wrapper .row {
-      margin-top: 15%;
-    } 
-    .wrapper > div > div {
-        flex: 1 1 30%;
-        height: 200%;
-        margin: .1% .2%;
-    }
-    .theme--light {
-        .v-card{
-            background-color: transparent;
-            box-shadow: none;
-        }
-     }
+    // .wrapper {
+    //     width: 1000px;
+    //     display: flex;
+    //     flex-wrap: wrap;
+    // }
+    // .wrapper .row {
+    //   margin-top: 15%;
+    // } 
+    // .wrapper > div > div {
+    //     flex: 1 1 30%;
+    //     height: 200%;
+    //     margin: .1% .2%;
+    // }
+    // .theme--light {
+    //     background-color: transparent;
+    //     .v-card{
+    //         background-color: transparent;
+    //         box-shadow: none;
+    //     }
+    //  }
 </style>

@@ -229,7 +229,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
   $color: rgb(57, 75, 57);
-  .theme--light {
+ // .theme--light {
     h3 {
       margin: 40px 0 0;
       color: $color;
@@ -247,7 +247,7 @@ export default {
     .v-btn {
       margin-left: 10px;
     }
-  }
+ // }
 </style>
 
 

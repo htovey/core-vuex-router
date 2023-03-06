@@ -39,11 +39,11 @@ import ItemService from '../../services/ItemService';
     }
 </script>
 <style lang="scss" scoped>
-     .theme--light {
+     //.theme--light {
         .v-toolbar {
-            background-color: blue;
+            background-color:   #5b5ba0;
             box-shadow: none;
             width: 100%;
         }
-     }
+     //}
 </style>

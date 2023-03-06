@@ -12,41 +12,46 @@
           :logout="this.$attrs.logout"
           :selectedItemList="selectedItemList"></catalog-toolbar-component>
       </v-card-title>    
-    <template>
-      <v-tabs
-        color="deep-purple accent-4"
-        right
-        align-with-title
-      >
-        <v-tab
-          v-for="tab in tabList"
-          :key="tab.label"
-          @click=selectCategory(tab.class)
-        >{{tab.label}}</v-tab>   
-        <v-tab-item
-          v-for="n in 6"
-          :key="n"
+      <template>
+        <v-tabs
+          color="deep-purple accent-4"
+          right
+          align-with-title
+          hide-slider
         >
-          <v-container fluid>
-            <v-row>
-              <v-col
-                v-for="i in 6"
-                :key="i"
-                cols="12"
-                md="4"
-              >          
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-tab-item>
-      </v-tabs>
-    </template>
+          <v-tab
+            v-for="tab in tabList"
+            :key="tab.label"
+            @click=selectCategory(tab.class)
+          >{{tab.label}}</v-tab>   
+          <v-tab-item
+            v-for="n in 6"
+            :key="n"
+          >
+            <v-container fluid>
+              <v-row>
+                <v-col
+                  v-for="i in 6"
+                  :key="i"
+                  cols="12"
+                  md="4"
+                >          
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-tab-item>
+        </v-tabs>
+      </template>
+      <catalog-collection 
+        v-if="showCategory" 
+        :itemList="itemList">
+      </catalog-collection>
     </v-card>
-    <catalog-collection 
-      v-if="showCategory" 
-      :itemList="itemList">
-    </catalog-collection>
+    <div>
+      <div class="home"></div>
+      <div class="truck"></div>
     </div>
+  </div>
 </template>
 <script>
 import CatalogToolbarComponent from '../../components/catalog/CatalogToolbarComponent.vue';
@@ -89,30 +94,30 @@ export default {
           path: '/catalog/cars',
           label: 'Cars'
         },
-                {
+        {
           class: 'coins',
           path: '/catalog/coins',
           label: 'Coins'
         },
-                {
+        {
           class: 'guns',
           path: '/catalog/guns',
           label: 'Guns'
         },
-                {
+        {
           class: 'knives',
           path: '/catalog/knives',
           label: 'Knives'
         },
         {
-          class: 'other',
-          path: '/catalog/other',
-          label: 'Other'
-        },
-        {
           class: 'tools',
           path: '/catalog/tools',
           label: 'Tools'
+        },
+        {
+          class: 'other',
+          path: '/catalog/other',
+          label: 'Other'
         },
       ];
     },
@@ -191,9 +196,22 @@ export default {
     //     margin: .1% .2%;
     // }
     .theme--light {
+        //height: 100%;
         .v-card{
             background-color: transparent;
             box-shadow: none;
         }
+        .home {
+          background-image: url('~@/assets/background.png');
+          height: 100%;
+          width: 100%;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        .truck {
+          background: url('~@/assets/truck.png') no-repeat;
+        } 
      }
 </style>
