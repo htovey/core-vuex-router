@@ -55,7 +55,7 @@
           size="64"
         ></v-progress-circular>
       </v-overlay>
-      <item-list-component></item-list-component>
+      <item-list-component :itemList="this.itemList"></item-list-component>
     </template>
   </div>
 </template>
@@ -134,8 +134,8 @@ export default {
       })
       console.log('set item list in state');
       this.itemList = myItemList;
-      this.$store.itemList = myItemList;
-      console.log('LIST length: '+this.itemList.length);
+     // this.$store.itemList = myItemList;
+       console.log('LIST length: '+this.itemList.length);
     },
 
     handleResponseError(error, method) {
@@ -219,7 +219,8 @@ export default {
       this.$router.push('/item');
     }
 
-  }
+  },
+
   created() {
     this.itemList = this.getItemList();
   },
