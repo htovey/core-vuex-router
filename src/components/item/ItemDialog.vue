@@ -156,9 +156,16 @@ export default {
 }
 </script>
 <style lang="scss">
-  .item-form {
-    width: 40%;
-    margin: 60px 60px;
+  .v-form {
+    width: 50%;
+    margin: 50px 10px 0 15px;
+    border: 1px gray solid;
+    height: 600px;
+
+    .v-input {
+      width: 90%;
+      border: 1px lightblue solid;
+    }
   }
 
   .image-window {
