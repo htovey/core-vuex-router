@@ -3,31 +3,31 @@
         <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                    @click="deleteBiz()"
+                    @click="deleteItem()"
                     v-bind="attrs"
                     v-on="on"
                 >
                     <v-icon>mdi-delete-outline</v-icon>
                 </v-btn>
             </template>
-            Delete Biz
+            Delete Item
         </v-tooltip>
         <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                    @click="openBiz(true)"
+                    @click="openItem(true)"
                     v-bind="attrs"
                     v-on="on"
                 >
                     <v-icon>mdi-plus-circle</v-icon>
                 </v-btn>
             </template>
-            Add Biz
+            Add Item
         </v-tooltip>  
     </v-toolbar>    
 </template>
 <script>
-import BizService from '../../services/BizService'
+import ItemService from '../../services/ItemService'
     export default {
         
         data () {
@@ -39,15 +39,15 @@ import BizService from '../../services/BizService'
             getParent () {
                 return this.$parent.$parent.$parent;
             },
-            openBiz (create) {
-               this.$attrs.openBiz(create); 
+            openItem (create) {
+               this.$attrs.openItem(create); 
             },
-            deleteBiz() {
-                let bizList = this.$attrs.selectedBizList;
-                BizService.deleteBiz(this.$store.userToken, bizList)
+            deleteItem() {
+                let itemList = this.$attrs.selectedItemList;
+                ItemService.deleteItem(this.$store.userToken, itemList)
                 .then(response => {
                     if (response.ok) {
-                        this.handleSuccess('delete', 'biz');
+                        this.handleSuccess('delete', 'item');
                     }
                 });        
             },

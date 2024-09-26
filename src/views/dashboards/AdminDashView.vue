@@ -21,11 +21,11 @@
             /> -->
             <v-toolbar class="float-left">
               <v-btn
-                @click="this.bizLogout"
+                @click="this.adminLogout"
               >LOGOUT</v-btn>
               <v-btn
-                v-if="this.selectedBizList.length === 1"
-                    @click="this.launchBiz"
+                v-if="this.selectedItemList.length === 1"
+                    @click="this.openItem"
                 >
                     <v-icon>mdi-launch</v-icon>
                 </v-btn>
@@ -33,44 +33,55 @@
           </v-col>
           <v-spacer></v-spacer>
           <v-col>
-          <biz-toolbar  
-            :openBiz="this.openBiz" 
-            :selectedBizList="selectedBizList"
+          <item-toolbar  
+            :openItem="this.openItem" 
+            :selectedItemList="selectedItemList"
             :handleSuccess="this.handleSuccess"
-          ></biz-toolbar>
+          ></item-toolbar>
           </v-col>
         </v-row>
       </v-app-bar>
     </template>   
-    <template v-if="this.openBizForm"> 
-      <biz-dialog :actionType="this.actionType"></biz-dialog>
+    <template v-if="this.openItemForm"> 
+      <item-dialog 
+        :actionType="this.actionType"
+        :selectedItem="selectedItemList[0]"
+        :handleItemSubmit="handleItemSubmit"></item-dialog>
     </template>
     <template v-else>
-      <biz-list-component></biz-list-component>
+      <v-overlay :value="loading">
+        <v-progress-circular
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
+      <item-list-component :itemList="this.itemList"></item-list-component>
     </template>
   </div>
 </template>
 <script>
-import BizListComponent from '../../components/biz/BizListComponent.vue';
-import BizDialog from '../../components/biz/BizDialog.vue';
-import BizToolbar from '../../components/biz/BizToolbar.vue';
-import BizService from '../../services/BizService';
+import ItemListComponent from '../../components/item/ItemListComponent.vue';
+import ItemDialog from '../../components/item/ItemDialog.vue';
+import ItemToolbar from '../../components/item/ItemToolbar.vue';
+import ItemService from '../../services/ItemService';
+import ImageService from '../../services/ImageService';
 import { mapMutations } from 'vuex';
  
 export default {
   components: { 
-    BizDialog,
-    BizListComponent,
-    BizToolbar
+    ItemDialog,
+    ItemListComponent,
+    ItemToolbar
   },
   name: 'AdminDashView',
   data() {
     return {
+      loading: true,
       msg: '',
-      bizlist: this.getBizList(),
+      itemList: [],
       actionType: '',
-      selectedBizList: [],
-      openBizForm: false,
+      selectedItemList: [],
+      openItemForm: false,
       snackbar: {
         open: false,
         msg: ''
@@ -79,88 +90,94 @@ export default {
   },
   methods: {
     ...mapMutations(['logout']),
-    bizLogout() {
+    beforeMount() {
+      console.log('before mount');
+    },
+    beforeCreate() {
+      console.log('beforeCreate()');
+    },
+    created() {
+      console.log('CREATED');
+    },
+    adminLogout() {
       this.logout;
       this.$router.push('/');
     },
-    getBizList() {
-      BizService.getBizList(this.$store.userToken)
+    getItemList() {
+    //  this.loading = true;
+      ItemService.getItemList(this.$store.getters.token)
       .then(response => {
         const headers = response.headers;
         response.json()
         .then(json => {
         if (response.ok) {
-          //this.bizlist = json
-          this.buildBizListTable(json);
+          //this.itemlist = json
+          this.buildItemListTable(json);
         } else {
           var error = headers.get('TokenError');
-          this.handleResponseError(error, 'getBizList');
+          this.handleResponseError(error, 'getItemList');
         }
         })
       })
       .catch((error) => {
         return error;
+      })
+      .finally(() => {
+        this.loading = false;
       });
     },
 
-    buildBizListTable(bizJson) {
-      var myBizList = [];
-      bizJson.map(function(biz) { 
-        myBizList.push(biz);
+    buildItemListTable(itemJson) {
+      var myItemList = [];
+      itemJson.map(function(item) { 
+        myItemList.push(item);
       })
-      console.log('set biz list in state');
-      this.bizlist = myBizList;
-      console.log('BIZ LIST length: '+this.bizlist.length);
+      console.log('set item list in state');
+      this.itemList = myItemList;
+     // this.$store.itemList = myItemList;
+       console.log('LIST length: '+this.itemList.length);
     },
 
     handleResponseError(error, method) {
       console.log(error+": "+method);
     },
 
-    openBiz(create) {
+    openItem(create) {
         if (create === true){
             this.actionType = 'create';
         } else {
             this.actionType = 'update';
         }
-        this.openBizForm = true;
+        this.openItemForm = true;
     },
 
-    toggleBiz() {
-        this.openBizForm = !this.openBizForm;
+    toggleItem() {
+        this.openItemForm = !this.openItemForm;
+        if (!this.openItemForm) {
+          this.selectedItemList = [];
+        }
     },
 
-    handleBizSubmit(biz) {
-        BizService.createUpdateBiz(
-          this.$store.userToken,
+    handleItemSubmit(item, newImageList) {
+        ItemService.createUpdateItem(
+          this.userToken,
           this.actionType,
-          biz.name,
-          biz.type,
-          biz.id,
+          item
         ).then(response => {
           if (response.ok) {
-            this.handleSuccess(this.actionType, 'biz');
+            if (newImageList.length > 0) {
+              ImageService.saveImageLinks(this.userToken, newImageList)
+                .then(() => {
+                  this.handleSuccess(this.actionType, 'item');
+                });
+            }
           }
         }).catch(error => console.log(error));
         
     },
 
     handleSuccess(action, entity) {
-      var actionType = 'created';
-      var entityType = 'User';
-      if (action === 'update') {
-        this.actionType = 'updated';
-      }
-
-      if (action === 'delete') {
-        actionType = 'deleted'
-      }
-
-      if (entity === 'biz') {
-        entityType = 'Business'
-      }
-
-      this.snackbar.msg = 'Success! '+entityType+' has been '+actionType+'.';
+      this.snackbar.msg = 'Success!';
       this.snackbar.open = true;
       this.updateView(action, entity);
     },
@@ -169,8 +186,8 @@ export default {
       //TODO decide whether to make these functions state dependent by using this.action, this.entity
       //toggle form----------
       if (action !== 'delete') {
-        if (entity === 'biz') {
-          this.toggleBiz();
+        if (entity === 'item') {
+          this.toggleItem();
         }
 
         if (entity === 'person') {
@@ -179,9 +196,9 @@ export default {
       }
 
       //refresh list------------
-      if (entity === 'biz') {
-        this.selectedBizList = [];
-        this.getBizList();
+      if (entity === 'item') {
+        this.selectedItemList = [];
+        this.getItemList();
       }
 
       if (entity === 'person') {
@@ -190,23 +207,29 @@ export default {
     },
 
     updateRowSelection(selection) {
-      this.selectedBizList = selection;   
+      this.selectedItemList = selection;   
     },
 
-    launchBiz() {
-     // let launchBiz = this.bizList[this.props.selectedRows.data[0].index];
-      //this.props.loadBizDashboard(launchBiz.id);
-      this.$store.profile.bizId = this.selectedBizList[0].id;
-      this.$router.push('/biz');
+    updateItem () {},
+
+    launchItemPage() {
+     // let launchItem = this.itemList[this.props.selectedRows.data[0].index];
+      //this.props.loadItemDashboard(launchItem.id);
+      this.$store.selectedItem = this.selectedItemList[0];
+      this.$router.push('/item');
     }
 
-  }
+  },
+
+  created() {
+    this.itemList = this.getItemList();
+  },
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
   $color: rgb(57, 75, 57);
-  .theme--light {
+ // .theme--light {
     h3 {
       margin: 40px 0 0;
       color: $color;
@@ -218,7 +241,13 @@ export default {
       background-color: transparent;
       box-shadow: none;
     }
-  }
+    .v-toolbar .v-btn {
+      margin-left: 10px;
+    }
+    .v-btn {
+      margin-left: 10px;
+    }
+ // }
 </style>
 
 

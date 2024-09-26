@@ -100,7 +100,7 @@ export default {
             this.userModel = {
                 'userName': this.unameRef,
                 'password': this.pwordRef,
-                'roleId': this.roleRef,
+                'role': 'user∂',
             };
             UserService.createUser(this.userModel, token, action)
             .then(response => {
