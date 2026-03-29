@@ -194,8 +194,6 @@ export default {
     },
 
     launchBiz() {
-     // let launchBiz = this.bizList[this.props.selectedRows.data[0].index];
-      //this.props.loadBizDashboard(launchBiz.id);
       this.$store.profile.bizId = this.selectedBizList[0].id;
       this.$router.push('/biz');
     }
